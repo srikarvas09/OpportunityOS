@@ -5,8 +5,34 @@ const db = require("./db");
 
 const app = express();
 
-app.use(cors());
+// Allow requests from the Vercel frontend and local dev
+const allowedOrigins = [
+  /^https:\/\/.*\.vercel\.app$/,   // any Vercel preview/production URL
+  "http://localhost:5173",          // local Vite dev server
+  "http://localhost:4173",          // local Vite preview
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return cb(null, true);
+      const allowed = allowedOrigins.some((o) =>
+        typeof o === "string" ? o === origin : o.test(origin)
+      );
+      cb(allowed ? null : new Error("Not allowed by CORS"), allowed);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
+
+// Health-check endpoint (Railway uses this to verify the service is up)
+app.get("/", (_req, res) => res.json({ status: "ok", service: "OpportunityOS API" }));
 
 // Test MySQL connection
 app.get("/api/test-db", async (req, res) => {
