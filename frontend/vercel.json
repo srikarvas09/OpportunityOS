@@ -3,7 +3,16 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/opportunities/enriched", "destination": "/api/opportunities/enriched" },
+    { "source": "/api/opportunities",           "destination": "/api/opportunities" },
+    { "source": "/api/applications",            "destination": "/api/applications" },
+    { "source": "/api/test-db",                 "destination": "/api/test-db" },
+    { "source": "/(.*)",                        "destination": "/index.html" }
   ]
 }
